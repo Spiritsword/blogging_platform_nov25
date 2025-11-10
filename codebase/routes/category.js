@@ -24,10 +24,11 @@ app.get("/", async (req, res) => {
     console.log(categories);
     res.json(categories);
   } catch (error) {
-    res.status(500).json({ message: "Error adding categories", error: error });
+    res.status(500).json({ message: "Error obtaining all categories", error: error });
   }
 });
 
+//Route to get single post
 app.get("/:id", async (req, res) => {
   try {
     const category = await Post.findByPk(req.params.id);
