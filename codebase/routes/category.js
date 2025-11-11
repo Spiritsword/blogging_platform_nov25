@@ -4,7 +4,7 @@ const app = require("express").Router();
 // import the models
 const { Category } = require("../models/index");
 
-// Route to add a new post
+// Route to add a new category
 app.post("/", async (req, res) => {
   try {
     const { category_name } = req.body;
@@ -16,7 +16,7 @@ app.post("/", async (req, res) => {
   }
 });
 
-// Route to get all posts
+// Route to get all categories
 app.get("/", async (req, res) => {
   try {
     console.log("Getting all categories");
@@ -28,7 +28,7 @@ app.get("/", async (req, res) => {
   }
 });
 
-//Route to get single post
+//Route to get single category
 app.get("/:id", async (req, res) => {
   try {
     const category = await Post.findByPk(req.params.id);

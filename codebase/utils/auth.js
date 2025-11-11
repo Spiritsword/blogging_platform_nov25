@@ -13,7 +13,7 @@ const authMiddleware = (req, res, next) => {
   }
 
   if (!token) {
-    res.status(400).json({ message: 'Bearer Token not supplied or invalid' });
+    res.status(400).json({ message: 'Bearer token not supplied or invalid' });
     return;
   }
 
