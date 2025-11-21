@@ -39,12 +39,16 @@ function login() {
 
         alert("User Logged In successfully");
 
+        // Fetch the categories list
+        fetchCategories();
         // Fetch the posts list
         fetchPosts();
 
         // Hide the auth container and show the app container as we're now logged in
         document.getElementById("auth-container").classList.add("hidden");
         document.getElementById("app-container").classList.remove("hidden");
+
+        generateCategoryOptions();
       } else {
         alert(data.message);
       }
@@ -53,6 +57,68 @@ function login() {
       console.log(error);
     });
 }
+
+function fetchCategories() {
+  fetch("http://localhost:3001/api/categories", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((res) => res.json())
+    .then((categories) => {
+      const categoriesContainer = document.getElementById("categories");
+      categoriesContainer.innerHTML = "";
+      categories.forEach((category) => {
+        const div = document.createElement("div");
+        div.innerHTML = `<h4>${category.id}</h4><h4>${
+          category.name}</h4>`;
+        categoriesContainer.appendChild(div);
+      });
+    });
+}
+
+function createCategory() {
+  const name = document.getElementById("category-name").value;
+  console.log(name)
+  fetch("http://localhost:3001/api/categories", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      //Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({name})
+  })
+    .then((res) => res.json())
+    .then(() => {
+      alert("Category created successfully");
+      fetchCategories();
+    });
+}
+
+function generateCategoryOptions() {
+  try{
+    response = fetch("http://localhost:3001/api/categories", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  })
+    .then((response) => response.json())
+    .then((categories) => {
+      console.log(categories);
+      const categoriesSelectContainer = document.getElementById("category");
+      categoriesSelectContainer.innerHTML = "";
+      categories.forEach((category) => {
+        console.log(category);
+        const option = document.createElement("option");
+        option.innerHTML = `${category.name}`;
+        option.setAttribute("value", category.name);
+        categoriesSelectContainer.appendChild(option);
+      });
+    })
+  }
+  catch {
+    console.log(response.status);
+  }
+}
+
 
 function logout() {
   fetch("http://localhost:3001/api/users/logout", {

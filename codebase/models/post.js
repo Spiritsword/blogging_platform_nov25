@@ -1,11 +1,16 @@
-const { Model, DataTypes, Sequelize } = require("sequelize");
+const {Model, DataTypes} = require("sequelize");
 
 const sequelize = require("../config/connection");
 
 class Post extends Model {}
 
 Post.init(
-  {
+  { id: {
+      allowNull: false,
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true
+    },
     title: {
       type: DataTypes.TEXT,
       allowNull: false,
@@ -21,7 +26,7 @@ Post.init(
     createdOn: {
       type: DataTypes.DATE,
       allowNull: false,
-      defaultValue: Sequelize.NOW,
+      defaultValue: sequelize.NOW,
     },
   },
   {
