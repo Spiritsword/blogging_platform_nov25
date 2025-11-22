@@ -70,8 +70,16 @@ function fetchCategories() {
       categoriesContainer.innerHTML = "";
       categories.forEach((category) => {
         const div = document.createElement("div");
-        div.innerHTML = `<h5>${category.id}</h5><h5>${
-          category.name}</h5>`;
+        const categoryIdNode = document.createElement("div");
+        const categoryNameNode = document.createElement("div");
+        //Note styling
+        div.className = "row pb-3";
+        categoryIdNode.className = "col-1";
+        categoryIdNode.innerHTML = `<h5>${category.id}</h5>`;
+        categoryNameNode.className = "col-11";
+        categoryNameNode.innerHTML = `<h5>${category.name}</h5>`;
+        div.appendChild(categoryIdNode);
+        div.appendChild(categoryNameNode);
         categoriesContainer.appendChild(div);
       })
     })
@@ -150,21 +158,21 @@ function fetchPosts() {
   })
   .then((res) => res.json())
   .then((posts) => {
-    const postsContainer = document.getElementById("posts");
-    postsContainer.innerHTML = "";
-    posts.forEach((post) => {
-      const div = document.createElement("div");
-      div.innerHTML = `<h3>${post.title}</h3><p>${
-        post.content
-      }</p><small>By: ${post.postedBy} on ${new Date(
-        post.createdOn
-      ).toLocaleString()}</small>`;
-      postsContainer.appendChild(div);
+      const postsContainer = document.getElementById("posts");
+      postsContainer.innerHTML = "";
+      posts.forEach((post) => {
+        const div = document.createElement("div");
+        div.innerHTML = `<h3>${post.title}</h3><p>${
+          post.content
+        }</p><small>By: ${post.postedBy} on ${new Date(
+          post.createdOn
+        ).toLocaleString()}</small>`;
+        postsContainer.appendChild(div);
+      })
     })
-  .catch((error) => {
-    console.log(error);
-  });
-  });
+    .catch((error) => {
+      console.log(error);
+    })
 }
 
 function createPost() {
