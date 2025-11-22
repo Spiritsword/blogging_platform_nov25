@@ -23,6 +23,10 @@ Post.init(
       type: DataTypes.INTEGER,
       allowNull: false,
     },
+    categoryId: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+    },
     createdOn: {
       type: DataTypes.DATE,
       allowNull: false,
