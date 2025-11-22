@@ -13,7 +13,7 @@ app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3001;
 
-// has the --rebuild parameter been passed as a command line param?
+// Has the --rebuild parameter been passed as a command line param?
 const rebuild = process.argv[2] === "--rebuild";
 
 // Serve static files from the 'public' directory

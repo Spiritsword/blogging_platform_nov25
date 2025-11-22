@@ -19,8 +19,8 @@ Post.init(
       type: DataTypes.TEXT,
       allowNull: false,
     },
-    postedBy: {
-      type: DataTypes.TEXT,
+    userId: {
+      type: DataTypes.INTEGER,
       allowNull: false,
     },
     createdOn: {
