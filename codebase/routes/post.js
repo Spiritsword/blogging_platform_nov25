@@ -8,8 +8,7 @@ const { Post } = require("../models/index");
 app.post("/", async (req, res) => {
   try {
     const { title, content, categoryId, postedBy } = req.body;
-    const post = await Post.create({ title, content, postedBy });
-
+    const post = await Post.create({ title, content, categoryId, postedBy });
     res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ error: "Error adding post" });
@@ -20,7 +19,6 @@ app.post("/", async (req, res) => {
 app.get("/", async (req, res) => {
   try {
     const posts = await Post.findAll();
-
     res.json(posts);
   } catch (error) {
     res.status(500).json({ error: "Error retrieving posts", error });
@@ -39,9 +37,9 @@ app.get("/:id", async (req, res) => {
 // Route to update a post
 app.put("/:id", async (req, res) => {
   try {
-    const { title, content, postedBy } = req.body;
+    const { title, content, categoryId, postedBy } = req.body;
     const post = await Post.update(
-      { title, content, postedBy },
+      { title, content, categoryId, postedBy },
       { where: { id: req.params.id } }
     );
     res.json(post);

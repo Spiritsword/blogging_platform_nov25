@@ -1,18 +1,18 @@
 [
   {
-    "id": 0,
-    "name": "John Doe"
+    "username": "John Doe",
+    "email": "john.doe@gmail.com"
   },
   {
-    "id": 1,
-    "name": "Jane Smith"
+    "username": "Jane Smith",
+    "email": "jane.smith@gmail.com"
   },
   {
-    "id": 2,
-    "name": "Alice Brown"
+    "username": "Alice Brown",
+    "email": "alice.brown@gmail.com"
   },
   {
-    "id": 3,
-    "name": "Bob White"
+    "username": "Bob White",
+    "email": "bob.white@gmail.com"
   }
 ]

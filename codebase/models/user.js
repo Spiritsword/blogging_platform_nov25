@@ -31,6 +31,7 @@ User.init(
     password: {
       type: DataTypes.STRING,
       allowNull: false,
+      defaultValue: "abcDEF1234",
       validate: {
         len: [8],
       },

@@ -2,17 +2,21 @@
 const sequelize = require("../config/connection");
 
 // import models
-const { Post } = require("../models");
+const { Post, Category, User } = require("../models/index");
 
 // add data and seeding for Category model
 
 // import seed data
 const postData = require("./posts.json");
+const userData = require("./users.json");
+const categoryData = require("./categories.json");
 
 // Seed database
 const seedDatabase = async () => {
   await sequelize.sync({ force: true });
 
+  await User.bulkCreate(userData);
+  await Category.bulkCreate(categoryData);
   await Post.bulkCreate(postData);
 
   process.exit(0);

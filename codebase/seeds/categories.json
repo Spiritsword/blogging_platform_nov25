@@ -1,18 +1,14 @@
 [
   {
-    "id": 0,
     "name": "AI"
   },
   {
-    "id": 1,
     "name": "Front End Development"
   },
   {
-    "id": 2,
     "name": "Back End Development"
   },
   {
-    "id": 3,
     "name": "General Web Development"
   }
 ]
