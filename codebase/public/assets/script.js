@@ -70,10 +70,13 @@ function fetchCategories() {
       categoriesContainer.innerHTML = "";
       categories.forEach((category) => {
         const div = document.createElement("div");
-        div.innerHTML = `<h4>${category.id}</h4><h4>${
-          category.name}</h4>`;
+        div.innerHTML = `<h5>${category.id}</h5><h5>${
+          category.name}</h5>`;
         categoriesContainer.appendChild(div);
-      });
+      })
+    })
+    .catch((error) => {
+      console.log(error);
     });
 }
 
@@ -88,11 +91,14 @@ function createCategory() {
     },
     body: JSON.stringify({name})
   })
-    .then((res) => res.json())
-    .then(() => {
-      alert("Category created successfully");
-      fetchCategories();
-    });
+  .then((res) => res.json())
+  .then(() => {
+    alert("Category created successfully");
+    fetchCategories();
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 }
 
 function generateCategoryOptions() {
@@ -100,7 +106,7 @@ function generateCategoryOptions() {
     response = fetch("http://localhost:3001/api/categories", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
-  })
+    })
     .then((response) => response.json())
     .then((categories) => {
       console.log(categories);
@@ -120,17 +126,20 @@ function generateCategoryOptions() {
   }
 }
 
-
 function logout() {
   fetch("http://localhost:3001/api/users/logout", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
-  }).then(() => {
+  })
+  .then(() => {
     // Clear the token from the local storage as we're now logged out
     localStorage.removeItem("authToken");
     token = null;
     document.getElementById("auth-container").classList.remove("hidden");
     document.getElementById("app-container").classList.add("hidden");
+  })
+  .catch((error) => {
+  console.log(error);
   });
 }
 
@@ -139,20 +148,23 @@ function fetchPosts() {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
   })
-    .then((res) => res.json())
-    .then((posts) => {
-      const postsContainer = document.getElementById("posts");
-      postsContainer.innerHTML = "";
-      posts.forEach((post) => {
-        const div = document.createElement("div");
-        div.innerHTML = `<h3>${post.title}</h3><p>${
-          post.content
-        }</p><small>By: ${post.postedBy} on ${new Date(
-          post.createdOn
-        ).toLocaleString()}</small>`;
-        postsContainer.appendChild(div);
-      });
-    });
+  .then((res) => res.json())
+  .then((posts) => {
+    const postsContainer = document.getElementById("posts");
+    postsContainer.innerHTML = "";
+    posts.forEach((post) => {
+      const div = document.createElement("div");
+      div.innerHTML = `<h3>${post.title}</h3><p>${
+        post.content
+      }</p><small>By: ${post.postedBy} on ${new Date(
+        post.createdOn
+      ).toLocaleString()}</small>`;
+      postsContainer.appendChild(div);
+    })
+  .catch((error) => {
+    console.log(error);
+  });
+  });
 }
 
 function createPost() {
@@ -167,9 +179,12 @@ function createPost() {
     },
     body: JSON.stringify({ title, content, categoryId, postedBy: "User" }),
   })
-    .then((res) => res.json())
-    .then(() => {
-      alert("Post created successfully");
-      fetchPosts();
-    });
+  .then((res) => res.json())
+  .then(() => {
+    alert("Post created successfully");
+    fetchPosts();
+  })
+  .catch((error) => {
+    console.log(error);
+  });
 }
