@@ -2,7 +2,7 @@
 const app = require("express").Router();
 
 // import the models
-const { Post } = require("../models/index");
+const { Post, Category, User }  = require("../models/index");
 
 // Route to add a new post
 app.post("/", async (req, res) => {

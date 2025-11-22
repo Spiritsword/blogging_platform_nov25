@@ -4,7 +4,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 
 const sequelize = require("./config/connection");
-const routes = require("./routes");
+const routes = require("./routes/index");
 
 // Initialize Express application
 const app = express();

@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const { User } = require("../models");
+const { Post, Category, User }  = require("../models/index");
 const { signToken, authMiddleware } = require("../utils/auth");
 
 // Get current authenticated user
@@ -42,7 +42,6 @@ router.get("/", authMiddleware, async (req, res) => {
 router.post("/", async (req, res) => {
   try {
     const userData = await User.create(req.body);
-
     const token = signToken(userData);
     res.status(200).json({ token, userData });
   } catch (err) {

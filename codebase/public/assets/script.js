@@ -16,6 +16,8 @@ function register() {
       } else {
         alert("User registered successfully");
       }
+      document.getElementById("auth-container").classList.add("hidden");
+      document.getElementById("app-container").classList.remove("hidden");
     })
     .catch((error) => {
       console.log(error);
@@ -36,7 +38,6 @@ function login() {
       if (data.token) {
         localStorage.setItem("authToken", data.token);
         token = data.token;
-
         alert("User Logged In successfully");
 
         // Fetch the categories list
@@ -109,7 +110,7 @@ function generateCategoryOptions() {
         console.log(category);
         const option = document.createElement("option");
         option.innerHTML = `${category.name}`;
-        option.setAttribute("value", category.name);
+        option.setAttribute("value", category.id);
         categoriesSelectContainer.appendChild(option);
       });
     })
@@ -157,13 +158,14 @@ function fetchPosts() {
 function createPost() {
   const title = document.getElementById("post-title").value;
   const content = document.getElementById("post-content").value;
+  const categoryId = document.getElementById("post-categoryId").value;
   fetch("http://localhost:3001/api/posts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title, content, postedBy: "User" }),
+    body: JSON.stringify({ title, content, categoryId, postedBy: "User" }),
   })
     .then((res) => res.json())
     .then(() => {
