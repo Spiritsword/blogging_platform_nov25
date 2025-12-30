@@ -7,10 +7,10 @@ const { Post, Category, User } = require("../models/index");
 // Route to add a new category
 app.post("/", async (req, res) => {
   try {
-    console.log("req.body:", req.body)
     const category_name = req.body.name;
-    console.log("category name:", category_name)
+    console.log("req.body:", req.body);
     const category = await Category.create(req.body);
+    console.log("category after create:", category.toJSON());
     res.status(201).json(category);
   } catch (error) {
     console.log(error);
@@ -21,9 +21,7 @@ app.post("/", async (req, res) => {
 // Route to get all categories
 app.get("/", async (req, res) => {
   try {
-    console.log("Getting all categories");
     const categories = await Category.findAll();
-    console.log(categories);
     res.json(categories);
   } catch (error) {
     res.status(500).json({ message: "Error obtaining all categories", error: error });

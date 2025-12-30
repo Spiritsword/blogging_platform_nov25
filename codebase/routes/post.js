@@ -7,8 +7,14 @@ const { Post, Category, User }  = require("../models/index");
 // Route to add a new post
 app.post("/", async (req, res) => {
   try {
+    console.log("req.body:", req.body);
+    console.log("req.date:", req.date);
+    console.log("req.timestamp:", req.timestamp);
+    console.log("req.headers:", req.headers);
     const { title, content, categoryId, postedBy } = req.body;
-    const post = await Post.create({ title, content, categoryId, postedBy });
+    console.log("post before create:",title, content, categoryId, postedBy);
+    const post = await Post.create(req.body);
+    console.log("post after create:", post.toJSON());
     res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ error: "Error adding post" });

@@ -185,7 +185,7 @@ function createPost() {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title, content, categoryId, postedBy: "User" }),
+    body: JSON.stringify({ title, content, categoryId, userId: "User" }),
   })
   .then((res) => res.json())
   .then(() => {
