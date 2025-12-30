@@ -118,7 +118,7 @@ function generateCategoryOptions() {
     .then((response) => response.json())
     .then((categories) => {
       console.log(categories);
-      const categoriesSelectContainer = document.getElementById("category");
+      const categoriesSelectContainer = document.getElementById("post-category");
       categoriesSelectContainer.innerHTML = "";
       categories.forEach((category) => {
         console.log(category);
@@ -178,7 +178,7 @@ function fetchPosts() {
 function createPost() {
   const title = document.getElementById("post-title").value;
   const content = document.getElementById("post-content").value;
-  const categoryId = document.getElementById("post-categoryId").value;
+  const categoryId = document.getElementById("post-category").value;
   fetch("http://localhost:3001/api/posts", {
     method: "POST",
     headers: {
