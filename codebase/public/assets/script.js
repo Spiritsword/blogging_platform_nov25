@@ -191,33 +191,45 @@ function generatePost(postsContainer, post, div){
   const editButton = document.createElement("button");
   const updateButton = document.createElement("button");
   const deleteButton = document.createElement("button");
-  deleteButton.addDeleteListener(post);
+  deleteButton.addEventListener("click", function() {
+    deletePost(post);
+    appContainerRefresh();
+  })
   deleteButton.innerText = "Delete";
+  //If post is not set to edit mode, present as normal.
   if (post.id != editPostId) {
     postNode.innerHTML = `<h3>${post.title}</h3><p>${
       post.content
     }</p><small>By: ${post.postedBy} on ${new Date(
       post.createdOn
     ).toLocaleString()}</small>`
-    editButton.addEditListener(post);
+    editButton.addEventListener("click", function() {
+      editPostId = post.id;
+      appContainerRefresh();
+    });
     editButton.innerText = "Edit";
     div.appendChild(postNode);
     div.appendChild(editButton);
     div.appendChild(deleteButton);
   } else {
+    //If post is set to edit mode, present post as form (similar to that for create post input).
     postNode.innerHTML = `
       <input type="text" id="updatePost-title">
       <select name="category" id="updatePost-category">
         <!-- Categories will be populated here -->
       </select>
       <textarea id="updatePost-content"></textarea>`
+    //Populate form with current values for the post.  
     document.getElementById("updatePost-title").value = post.title;
     document.getElementById("updatePost-category").value = post.categoryId;
     document.getElementById("updatePost-content").value = post.content;
-    updateButton.addUpdateListener(post);
+    updateButton.addEventListener("click", function() {
+      updatePost();
+      appContainerRefresh();
+    })
     updateButton.innerText = "Update";
     div.appendChild(postNode);
-    div.appendChild(saveButton);
+    div.appendChild(updateButton);
     div.appendChild(deleteButton);
   }
   postsContainer.appendChild(div);
@@ -238,28 +250,16 @@ function updatePost() {
   })
 }
 
-function addDeleteListener(post) {"click", function() {
-  deletePost(post);
-  appContainerRefresh();
-}
-
-function addEditListener(post) {"click", function() {
-  editPostId = post.id;
-  appContainerRefresh();
-}
-
-function addSaveListener(post) {}
-
-
-function savePost(post){
-  
-}
-
 function deletePost(post){
-
-  
+    fetch(`http://localhost:3001/api/posts/${post.id}`, {      
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+  })
+  .then((res) => res.json())
+  .then(() => {
+    appContainerRefresh();
+  })
 }
-
 
 //Main Function
 
