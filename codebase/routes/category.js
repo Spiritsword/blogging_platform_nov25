@@ -8,7 +8,7 @@ const { signToken, authMiddleware} = require("../utils/auth");
 const { Post, Category, User } = require("../models/index");
 
 // Route to add a new category
-app.post("/", authMiddleware, async (req, res) => {
+app.post("/", async (req, res) => {
   try {
     const category_name = req.body.name;
     console.log("req.body:", req.body);

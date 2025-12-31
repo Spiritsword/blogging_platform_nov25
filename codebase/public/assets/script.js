@@ -48,8 +48,7 @@ function login() {
         // Hide the auth container and show the app container as we're now logged in
         document.getElementById("auth-container").classList.add("hidden");
         document.getElementById("app-container").classList.remove("hidden");
-
-        generateCategoryOptions();
+        appContainerRefresh();
       } else {
         alert(data.message);
       }
@@ -58,6 +57,159 @@ function login() {
       console.log(error);
     });
 }
+
+function createCategory() {
+  const name = document.getElementById("category-name").value;
+  console.log(name)
+  fetch("http://localhost:3001/api/categories", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({name})
+  })
+  .then((res) => res.json())
+  .then(() => {
+    alert("Category created successfully");
+    fetchCategories();
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
+
+
+
+function logout() {
+  fetch("http://localhost:3001/api/users/logout", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  .then(() => {
+    // Clear the token from the local storage as we're now logged out
+    localStorage.removeItem("authToken");
+    token = null;
+    document.getElementById("auth-container").classList.remove("hidden");
+    document.getElementById("app-container").classList.add("hidden");
+  })
+  .catch((error) => {
+  console.log(error);
+  });
+}
+
+function createPost() {
+  const title = document.getElementById("post-title").value;
+  const content = document.getElementById("post-content").value;
+  const categoryId = parseInt(document.getElementById("post-category").value);
+  console.log({ title, content, categoryId });
+  
+  fetch("http://localhost:3001/api/posts", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({title, content, categoryId}),
+  })
+  .then((res) => res.json())
+  .then(() => {
+    alert("Post created successfully");
+    appContainerRefresh();
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
+
+
+//App Page Refresh
+
+function appContainerRefresh () {
+  populateCategories();
+  populatePosts();
+}
+
+
+//Helper functions
+
+function populatePosts() {
+  fetch("http://localhost:3001/api/posts", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  .then((res) => res.json())
+  .then((posts) => {
+    showPosts(posts);
+  })
+  .catch((error) => {
+    console.log(error);
+  })
+}
+
+function populateCategories() {
+  try{
+    response = fetch("http://localhost:3001/api/categories", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.json())
+    .then((categories) => {
+      showNewPostCategoryDropdown(categories);
+    })
+  }
+  catch {
+    console.log(response.status);
+  }
+}
+
+function showNewPostCategoryDropdown (categories){
+      const categoriesSelectContainer = document.getElementById("post-category");
+      categoriesSelectContainer.innerHTML = "";
+      categories.forEach((category) => {
+        const option = document.createElement("option");
+        option.innerHTML = `${category.name}`;
+        option.setAttribute("value", category.id);
+        categoriesSelectContainer.appendChild(option);
+      });
+    }
+
+function showCategoryFilterDropdown(){}
+
+function showPosts (posts){
+  const postsContainer = document.getElementById("posts");
+  postsContainer.innerHTML = "";
+  posts.forEach((post) => {
+    const div = document.createElement("div");
+    div.innerHTML = `<h3>${post.title}</h3><p>${
+      post.content
+    }</p><small>By: ${post.postedBy} on ${new Date(
+      post.createdOn
+    ).toLocaleString()}</small>`;
+    postsContainer.appendChild(div);
+  })
+}
+
+function editPost(){
+
+
+}
+
+function savePost(){
+
+  
+}
+
+function deletePost(){
+
+  
+}
+
+
+
+
+
+/*** ARCHIVE
 
 function fetchCategories() {
   fetch("http://localhost:3001/api/categories", {
@@ -88,113 +240,4 @@ function fetchCategories() {
     });
 }
 
-function createCategory() {
-  const name = document.getElementById("category-name").value;
-  console.log(name)
-  fetch("http://localhost:3001/api/categories", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({name})
-  })
-  .then((res) => res.json())
-  .then(() => {
-    alert("Category created successfully");
-    fetchCategories();
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-}
-
-function generateCategoryOptions() {
-  try{
-    response = fetch("http://localhost:3001/api/categories", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.json())
-    .then((categories) => {
-      console.log(categories);
-      const categoriesSelectContainer = document.getElementById("post-category");
-      categoriesSelectContainer.innerHTML = "";
-      categories.forEach((category) => {
-        console.log(category);
-        const option = document.createElement("option");
-        option.innerHTML = `${category.name}`;
-        option.setAttribute("value", category.id);
-        categoriesSelectContainer.appendChild(option);
-      });
-    })
-  }
-  catch {
-    console.log(response.status);
-  }
-}
-
-function logout() {
-  fetch("http://localhost:3001/api/users/logout", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  .then(() => {
-    // Clear the token from the local storage as we're now logged out
-    localStorage.removeItem("authToken");
-    token = null;
-    document.getElementById("auth-container").classList.remove("hidden");
-    document.getElementById("app-container").classList.add("hidden");
-  })
-  .catch((error) => {
-  console.log(error);
-  });
-}
-
-function fetchPosts() {
-  fetch("http://localhost:3001/api/posts", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  .then((res) => res.json())
-  .then((posts) => {
-      const postsContainer = document.getElementById("posts");
-      postsContainer.innerHTML = "";
-      posts.forEach((post) => {
-        const div = document.createElement("div");
-        div.innerHTML = `<h3>${post.title}</h3><p>${
-          post.content
-        }</p><small>By: ${post.postedBy} on ${new Date(
-          post.createdOn
-        ).toLocaleString()}</small>`;
-        postsContainer.appendChild(div);
-      })
-    })
-    .catch((error) => {
-      console.log(error);
-    })
-}
-
-function createPost() {
-  const title = document.getElementById("post-title").value;
-  const content = document.getElementById("post-content").value;
-  const categoryId = parseInt(document.getElementById("post-category").value);
-  console.log({ title, content, categoryId });
-  
-  fetch("http://localhost:3001/api/posts", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`,
-    },
-    body: JSON.stringify({title, content, categoryId}),
-  })
-  .then((res) => res.json())
-  .then(() => {
-    alert("Post created successfully");
-    fetchPosts();
-  })
-  .catch((error) => {
-    console.log(error);
-  });
-}
+***/
