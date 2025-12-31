@@ -2,6 +2,7 @@ let token = localStorage.getItem("authToken");
 
 //Id of post that is being edited. ("-1" means no post is being edited.)
 let editPostId = -1;
+let editPost = null;
 
 //Auth Container Functionality
 
@@ -184,6 +185,12 @@ function showPosts (posts){
     const div = document.createElement("div");
     generatePost(postsContainer, post, div);
   })
+  //Populate edit form (if it exists) with current values for the post.
+  if (editPostId != -1) { 
+  document.getElementById("updatePost-title").value = editPost.title;
+  document.getElementById("updatePost-category").value = editPost.categoryId;
+  document.getElementById("updatePost-content").value = editPost.content;
+  }
 }
 
 function generatePost(postsContainer, post, div){
@@ -213,16 +220,13 @@ function generatePost(postsContainer, post, div){
     div.appendChild(deleteButton);
   } else {
     //If post is set to edit mode, present post as form (similar to that for create post input).
+    editPost = post; //Needed later to populate edit form with current values.
     postNode.innerHTML = `
       <input type="text" id="updatePost-title">
       <select name="category" id="updatePost-category">
         <!-- Categories will be populated here -->
       </select>
       <textarea id="updatePost-content"></textarea>`
-    //Populate form with current values for the post.  
-    document.getElementById("updatePost-title").value = post.title;
-    document.getElementById("updatePost-category").value = post.categoryId;
-    document.getElementById("updatePost-content").value = post.content;
     updateButton.addEventListener("click", function() {
       updatePost();
       appContainerRefresh();
@@ -233,7 +237,7 @@ function generatePost(postsContainer, post, div){
     div.appendChild(deleteButton);
   }
   postsContainer.appendChild(div);
-  }
+}
 
 function updatePost() {
     const title = document.getElementById("updatePost-title").value;
@@ -246,6 +250,7 @@ function updatePost() {
   })
   .then((res) => res.json())
   .then(() => {
+    editPostId = -1;
     appContainerRefresh();
   })
 }
