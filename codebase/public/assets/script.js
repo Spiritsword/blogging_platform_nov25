@@ -1,5 +1,8 @@
 let token = localStorage.getItem("authToken");
 
+
+//Auth Container Functionality
+
 function register() {
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
@@ -58,6 +61,8 @@ function login() {
     });
 }
 
+//App Container Functionality
+
 function createCategory() {
   const name = document.getElementById("category-name").value;
   console.log(name)
@@ -78,8 +83,6 @@ function createCategory() {
     console.log(error);
   });
 }
-
-
 
 function logout() {
   fetch("http://localhost:3001/api/users/logout", {
@@ -122,16 +125,12 @@ function createPost() {
   });
 }
 
-
-//App Page Refresh
+//Helper functions
 
 function appContainerRefresh () {
   populateCategories();
   populatePosts();
 }
-
-
-//Helper functions
 
 function populatePosts() {
   fetch("http://localhost:3001/api/posts", {
@@ -174,7 +173,7 @@ function showNewPostCategoryDropdown (categories){
       });
     }
 
-function showCategoryFilterDropdown(){}
+function showCategoryFilterDropdown(categories){}
 
 function showPosts (posts){
   const postsContainer = document.getElementById("posts");
