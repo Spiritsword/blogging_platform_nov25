@@ -99,11 +99,10 @@ function logout() {
 }
 
 function createPost() {
-  const title = document.getElementById("post-title").value;
-  const content = document.getElementById("post-content").value;
-  const categoryId = parseInt(document.getElementById("post-category").value);
-  console.log({ title, content, categoryId });
-  
+  const title = document.getElementById("createPost-title").value;
+  const content = document.getElementById("createPost-content").value;
+  const categoryId = parseInt(document.getElementById("createPost-category").value);
+  console.log({ title, content, categoryId });  
   fetch("http://localhost:3001/api/posts", {
     method: "POST",
     headers: {
@@ -157,7 +156,8 @@ function populateCategories() {
     })
     .then((response) => response.json())
     .then((categories) => {
-      showNewPostCategoryDropdown(categories);
+      showPostCategoryDropdown(categories, "createPost-category");
+      showPostCategoryDropdown(categories, "updatePost-category");
     })
   }
   catch {
@@ -165,16 +165,18 @@ function populateCategories() {
   }
 }
 
-function showNewPostCategoryDropdown (categories){
-      const categoriesSelectContainer = document.getElementById("post-category");
+function showPostCategoryDropdown (categories, categorySelectContainerName){
+      if(document.getElementById(categorySelectContainerName) != null) {
+      const categoriesSelectContainer = document.getElementById(categorySelectContainerName);
       categoriesSelectContainer.innerHTML = "";
       categories.forEach((category) => {
-        const option = document.createElement("option");
+        var option = document.createElement("option");
         option.innerHTML = `${category.name}`;
         option.setAttribute("value", category.id);
         categoriesSelectContainer.appendChild(option);
       });
     }
+  }
 
 function showCategoryFilterDropdown(categories){}
 
@@ -186,7 +188,8 @@ function showPosts (posts){
     generatePost(postsContainer, post, div);
   })
   //Populate edit form (if it exists) with current values for the post.
-  if (editPostId != -1) { 
+  if (editPostId != -1) {
+  populateCategories();
   document.getElementById("updatePost-title").value = editPost.title;
   document.getElementById("updatePost-category").value = editPost.categoryId;
   document.getElementById("updatePost-content").value = editPost.content;
@@ -243,9 +246,12 @@ function updatePost() {
     const title = document.getElementById("updatePost-title").value;
     const content = document.getElementById("updatePost-content").value;
     const categoryId = parseInt(document.getElementById("updatePost-category").value);
+    const body = JSON.stringify({title, content, categoryId});
     fetch(`http://localhost:3001/api/posts/${editPostId}`, {      
     method: "PUT",
-    headers: { Authorization: `Bearer ${token}` },
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}` },
     body: JSON.stringify({title, content, categoryId}),
   })
   .then((res) => res.json())
@@ -267,12 +273,6 @@ function deletePost(post){
 }
 
 //Main Function
-
-
-
-
-
-
 
 /*** ARCHIVE
 

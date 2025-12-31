@@ -1,15 +1,17 @@
-// Import required packages
-const express = require("express");
-const bodyParser = require("body-parser");
-const path = require("path");
 
+// Initialize Express application
+const express = require("express");
+const app = express();
+const bodyParser = require("body-parser");
+app.use(bodyParser.json());
+app.use(express.urlencoded({ extended: true }));
+
+
+// Import required packages
+const path = require("path");
 const sequelize = require("./config/connection");
 const routes = require("./routes/index");
 
-// Initialize Express application
-const app = express();
-app.use(bodyParser.json());
-app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3001;
 
