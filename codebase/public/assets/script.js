@@ -1,5 +1,7 @@
 let token = localStorage.getItem("authToken");
 
+//Id of post that is being edited. ("-1" means no post is being edited.)
+let editPostId = -1;
 
 //Auth Container Functionality
 
@@ -19,8 +21,8 @@ function register() {
       } else {
         alert("User registered successfully");
       }
-      document.getElementById("auth-container").classList.add("hidden");
-      document.getElementById("app-container").classList.remove("hidden");
+      // Hide the auth container and show the app container as we're now logged in
+      swapToAppContainer();
     })
     .catch((error) => {
       console.log(error);
@@ -43,15 +45,9 @@ function login() {
         token = data.token;
         alert("User Logged In successfully");
 
-        // Fetch the categories list
-        fetchCategories();
-        // Fetch the posts list
-        fetchPosts();
-
         // Hide the auth container and show the app container as we're now logged in
-        document.getElementById("auth-container").classList.add("hidden");
-        document.getElementById("app-container").classList.remove("hidden");
-        appContainerRefresh();
+        swapToAppContainer();
+
       } else {
         alert(data.message);
       }
@@ -77,7 +73,7 @@ function createCategory() {
   .then((res) => res.json())
   .then(() => {
     alert("Category created successfully");
-    fetchCategories();
+    appContainerRefresh();
   })
   .catch((error) => {
     console.log(error);
@@ -125,7 +121,13 @@ function createPost() {
   });
 }
 
-//Helper functions
+//Helper Functions
+
+function swapToAppContainer () {
+  document.getElementById("auth-container").classList.add("hidden");
+  document.getElementById("app-container").classList.remove("hidden");
+  appContainerRefresh();
+}
 
 function appContainerRefresh () {
   populateCategories();
@@ -180,29 +182,88 @@ function showPosts (posts){
   postsContainer.innerHTML = "";
   posts.forEach((post) => {
     const div = document.createElement("div");
-    div.innerHTML = `<h3>${post.title}</h3><p>${
-      post.content
-    }</p><small>By: ${post.postedBy} on ${new Date(
-      post.createdOn
-    ).toLocaleString()}</small>`;
-    postsContainer.appendChild(div);
+    generatePost(postsContainer, post, div);
   })
 }
 
-function editPost(){
+function generatePost(postsContainer, post, div){
+  const postNode = document.createElement("div");
+  const editButton = document.createElement("button");
+  const updateButton = document.createElement("button");
+  const deleteButton = document.createElement("button");
+  deleteButton.addDeleteListener(post);
+  deleteButton.innerText = "Delete";
+  if (post.id != editPostId) {
+    postNode.innerHTML = `<h3>${post.title}</h3><p>${
+      post.content
+    }</p><small>By: ${post.postedBy} on ${new Date(
+      post.createdOn
+    ).toLocaleString()}</small>`
+    editButton.addEditListener(post);
+    editButton.innerText = "Edit";
+    div.appendChild(postNode);
+    div.appendChild(editButton);
+    div.appendChild(deleteButton);
+  } else {
+    postNode.innerHTML = `
+      <input type="text" id="updatePost-title">
+      <select name="category" id="updatePost-category">
+        <!-- Categories will be populated here -->
+      </select>
+      <textarea id="updatePost-content"></textarea>`
+    document.getElementById("updatePost-title").value = post.title;
+    document.getElementById("updatePost-category").value = post.categoryId;
+    document.getElementById("updatePost-content").value = post.content;
+    updateButton.addUpdateListener(post);
+    updateButton.innerText = "Update";
+    div.appendChild(postNode);
+    div.appendChild(saveButton);
+    div.appendChild(deleteButton);
+  }
+  postsContainer.appendChild(div);
+  }
 
-
+function updatePost() {
+    const title = document.getElementById("updatePost-title").value;
+    const content = document.getElementById("updatePost-content").value;
+    const categoryId = parseInt(document.getElementById("updatePost-category").value);
+    fetch(`http://localhost:3001/api/posts/${editPostId}`, {      
+    method: "PUT",
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify({title, content, categoryId}),
+  })
+  .then((res) => res.json())
+  .then(() => {
+    appContainerRefresh();
+  })
 }
 
-function savePost(){
+function addDeleteListener(post) {"click", function() {
+  deletePost(post);
+  appContainerRefresh();
+}
+
+function addEditListener(post) {"click", function() {
+  editPostId = post.id;
+  appContainerRefresh();
+}
+
+function addSaveListener(post) {}
+
+
+function savePost(post){
+  
+}
+
+function deletePost(post){
 
   
 }
 
-function deletePost(){
 
-  
-}
+//Main Function
+
+
 
 
 
