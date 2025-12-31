@@ -1,11 +1,14 @@
 // create a new router
 const app = require("express").Router();
 
+//import authentication
+const { signToken, authMiddleware} = require("../utils/auth");
+
 // import the models
 const { Post, Category, User } = require("../models/index");
 
 // Route to add a new category
-app.post("/", async (req, res) => {
+app.post("/", authMiddleware, async (req, res) => {
   try {
     const category_name = req.body.name;
     console.log("req.body:", req.body);

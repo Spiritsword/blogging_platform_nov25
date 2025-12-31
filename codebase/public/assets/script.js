@@ -178,14 +178,16 @@ function fetchPosts() {
 function createPost() {
   const title = document.getElementById("post-title").value;
   const content = document.getElementById("post-content").value;
-  const categoryId = document.getElementById("post-category").value;
+  const categoryId = parseInt(document.getElementById("post-category").value);
+  console.log({ title, content, categoryId });
+  
   fetch("http://localhost:3001/api/posts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ title, content, categoryId, userId: "User" }),
+    body: JSON.stringify({title, content, categoryId}),
   })
   .then((res) => res.json())
   .then(() => {

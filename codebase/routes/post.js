@@ -1,25 +1,25 @@
 // create a new router
 const app = require("express").Router();
 
+//import authentication
+const { signToken, authMiddleware } = require("../utils/auth");
+
 // import the models
 const { Post, Category, User }  = require("../models/index");
 
 // Route to add a new post
-app.post("/", async (req, res) => {
+app.post("/", authMiddleware, async (req, res) => {
   try {
-    console.log("req.body:", req.body);
-    console.log("req.date:", req.date);
-    console.log("req.timestamp:", req.timestamp);
-    console.log("req.headers:", req.headers);
-    const { title, content, categoryId, postedBy } = req.body;
-    console.log("post before create:",title, content, categoryId, postedBy);
-    const post = await Post.create(req.body);
-    console.log("post after create:", post.toJSON());
+    const userId = req.user.id;
+    const {title, content, categoryId} = req.body;
+    const post = await Post.create({title, content, userId, categoryId, createdOn: new Date()});
     res.status(201).json(post);
   } catch (error) {
-    res.status(500).json({ error: "Error adding post" });
+  console.error("CREATE POST ERROR:", error);
+  res.status(500).json({ error: error.message });
   }
-});
+}
+);
 
 // Route to get all posts
 app.get("/", async (req, res) => {
