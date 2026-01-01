@@ -3,6 +3,7 @@ let token = localStorage.getItem("authToken");
 //Id of post that is being edited. ("-1" means no post is being edited.)
 let editPostId = -1;
 let editPost = null;
+let selectedCategoryId = null;
 
 //Auth Container Functionality
 
@@ -181,6 +182,7 @@ function populateCategories() {
     .then((categories) => {
       showPostCategoryDropdown(categories, "createPost-category");
       showPostCategoryDropdown(categories, "updatePost-category");
+      showPostCategoryDropdown(categories, "selectFilter-category");
     })
   }
   catch {
@@ -220,6 +222,9 @@ function showPosts (posts, users, categories){
 }
 
 function generatePost(postsContainer, post, div, users, categories){
+  if (selectedCategoryId != null && selectedCategoryId != post.categoryId) {
+    return;
+  }
   const postNode = document.createElement("div");
   const editButton = document.createElement("button");
   const updateButton = document.createElement("button");
@@ -287,6 +292,16 @@ function updatePost() {
     editPostId = -1;
     appContainerRefresh();
   })
+}
+
+function filterByCategory() {
+  selectedCategoryId = document.getElementById("selectFilter-category").value;
+  appContainerRefresh();
+}
+
+function cancelCategoryFilter() {
+  selectedCategoryId = null;
+  appContainerRefresh();
 }
 
 function deletePost(post){

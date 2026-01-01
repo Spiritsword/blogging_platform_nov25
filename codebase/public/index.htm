@@ -37,8 +37,6 @@
         <input type="text" id="category-name" placeholder="Category Name">
         <button onclick="createCategory()">Submit Category</button>
         <hr>
-        <h2>Categories</h2>
-        <div id="categories"></div>
 
         <h2>Create a Post</h2>
         <input type="text" id="createPost-title" placeholder="Title">
@@ -48,6 +46,15 @@
         <textarea id="createPost-content" placeholder="Content"></textarea>
         <button onclick="createPost()">Submit Post</button>
         <hr>
+
+        <h2>Filter by Category</h2>
+        <select name="filterCategory" id="selectFilter-category" placeholder="Category">
+            <!-- Categories will be populated here -->
+        </select>
+        <button onclick="filterByCategory()">Filter</button>
+        <button onclick="cancelCategoryFilter()">Cancel Filter</button>
+        <hr>
+
         <h2>Posts</h2>
         <div id="posts"></div>
     </div>
