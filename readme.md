@@ -12,9 +12,9 @@ They can update and delete (only) their own posts.
 ## Installation
 
 
-#### **Clone the repository** and navigate to the codebase folder in a bash terminal
+#### **Clone the repository** and navigate to the codebase folder in a bash terminal.
 #### **Copy the `.env.example` file** and rename it to `.env`, then update the environment variables.
-#### **Open MySQL and create the database:**
+#### **Open MySQL and create the database.**
 #### In a terminal type the following command:
 
 ```bash
@@ -27,7 +27,7 @@ mysql -u root -p
 npm install
 ```
 
-#### **Then seed the database with test data**
+#### **Then seed the database with test data:**
 
 ```bash
 npm run seed
@@ -60,7 +60,7 @@ http://localhost:3001
 Key technologies used are as follows:
 
 #### Node.js
-The back end of the web app is programmed in javaScript using Node.js
+The back end of the web app is programmed in javaScript using Node.js.
 
 #### Express
 Express is a commonly used and reliable backend framework used with Node.js for handling routes and middleware.
