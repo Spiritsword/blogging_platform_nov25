@@ -63,7 +63,6 @@ function login() {
 
 function createCategory() {
   const name = document.getElementById("category-name").value;
-  console.log(name)
   fetch("http://localhost:3001/api/categories", {
     method: "POST",
     headers: {
@@ -103,7 +102,6 @@ function createPost() {
   const title = document.getElementById("createPost-title").value;
   const content = document.getElementById("createPost-content").value;
   const categoryId = parseInt(document.getElementById("createPost-category").value);
-  console.log({ title, content, categoryId });  
   fetch("http://localhost:3001/api/posts", {
     method: "POST",
     headers: {
@@ -327,38 +325,3 @@ function deletePost(post){
     appContainerRefresh();
   })
 }
-
-//Main Function
-
-/*** ARCHIVE
-
-function fetchCategories() {
-  fetch("http://localhost:3001/api/categories", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  })
-    .then((res) => res.json())
-    .then((categories) => {
-      const categoriesContainer = document.getElementById("categories");
-      categoriesContainer.innerHTML = "";
-      categories.forEach((category) => {
-        const div = document.createElement("div");
-        const categoryIdNode = document.createElement("div");
-        const categoryNameNode = document.createElement("div");
-        //Note styling
-        div.className = "row pb-3";
-        categoryIdNode.className = "col-1";
-        categoryIdNode.innerHTML = `<h5>${category.id}</h5>`;
-        categoryNameNode.className = "col-11";
-        categoryNameNode.innerHTML = `<h5>${category.name}</h5>`;
-        div.appendChild(categoryIdNode);
-        div.appendChild(categoryNameNode);
-        categoriesContainer.appendChild(div);
-      })
-    })
-    .catch((error) => {
-      console.log(error);
-    });
-}
-
-***/

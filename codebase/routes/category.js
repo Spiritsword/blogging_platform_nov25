@@ -11,12 +11,9 @@ const { Post, Category, User } = require("../models/index");
 app.post("/", async (req, res) => {
   try {
     const category_name = req.body.name;
-    console.log("req.body:", req.body);
     const category = await Category.create(req.body);
-    console.log("category after create:", category.toJSON());
     res.status(201).json(category);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Error adding category", error: error });
   }
 });
@@ -24,9 +21,7 @@ app.post("/", async (req, res) => {
 // Route to get all categories
 app.get("/", authMiddleware, async (req, res) => {
   try {
-    console.log("Getting all categories");
     const categories = await Category.findAll();
-    console.log("Found categories");
     res.json(categories);
   } catch (error) {
     res.status(500).json({ message: "Error obtaining all categories", error: error });

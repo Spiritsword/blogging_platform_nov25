@@ -15,7 +15,6 @@ app.post("/", authMiddleware, async (req, res) => {
     const post = await Post.create({title, content, userId, categoryId, createdOn: new Date()});
     res.status(201).json(post);
   } catch (error) {
-  console.error("CREATE POST ERROR:", error);
   res.status(500).json({ error: error.message });
   }
 }
@@ -43,13 +42,7 @@ app.get("/:id", async (req, res) => {
 // Route to update a post
 app.put("/:id", async (req, res) => {
   try {
-    console.log("Updating post with ID:", req.params.id);
     const { title, content, categoryId } = req.body;
-    console.log("body: ", req.body);
-    console.log("body.title: ", req.body.title);
-    console.log("title: "+ title);
-    console.log("content: " + content);
-    console.log("categoryId:" + categoryId);
     const post = await Post.update(
       { title, content, categoryId},
       { where: { id: req.params.id } }
