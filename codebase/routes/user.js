@@ -32,7 +32,9 @@ router.get("/:id", async (req, res) => {
 
 router.get("/", authMiddleware, async (req, res) => {
   try {
+    console.log("Getting all users");
     const users = await User.findAll();
+    console.log("Found users");
     res.status(200).json(users);
   } catch (err) {
     res.status(400).json(err);

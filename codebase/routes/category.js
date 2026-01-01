@@ -22,9 +22,11 @@ app.post("/", async (req, res) => {
 });
 
 // Route to get all categories
-app.get("/", async (req, res) => {
+app.get("/", authMiddleware, async (req, res) => {
   try {
+    console.log("Getting all categories");
     const categories = await Category.findAll();
+    console.log("Found categories");
     res.json(categories);
   } catch (error) {
     res.status(500).json({ message: "Error obtaining all categories", error: error });

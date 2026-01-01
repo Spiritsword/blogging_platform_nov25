@@ -134,18 +134,41 @@ function appContainerRefresh () {
   populatePosts();
 }
 
-function populatePosts() {
-  fetch("http://localhost:3001/api/posts", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  .then((res) => res.json())
-  .then((posts) => {
-    showPosts(posts);
-  })
-  .catch((error) => {
-    console.log(error);
-  })
+async function populatePosts() {
+  try{
+    const [posts, users, categories] = await Promise.all([
+    fetch("http://localhost:3001/api/posts", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => res.json())
+    .catch((error) => {
+      console.log(error);
+    }),
+    fetch("http://localhost:3001/api/users", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => res.json())
+    .catch((error) => {
+      console.log(error);
+    }),
+    fetch("http://localhost:3001/api/categories", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((res) => res.json())
+    .catch((error) => {
+      console.log(error);
+    })
+    ]);
+  
+    showPosts(posts, users, categories);
+  }
+  catch (error) {
+    console.error('Error fetching data:', error);
+    return null;
+  }
 }
 
 function populateCategories() {
@@ -180,12 +203,12 @@ function showPostCategoryDropdown (categories, categorySelectContainerName){
 
 function showCategoryFilterDropdown(categories){}
 
-function showPosts (posts){
+function showPosts (posts, users, categories){
   const postsContainer = document.getElementById("posts");
   postsContainer.innerHTML = "";
   posts.forEach((post) => {
     const div = document.createElement("div");
-    generatePost(postsContainer, post, div);
+    generatePost(postsContainer, post, div, users, categories);
   })
   //Populate edit form (if it exists) with current values for the post.
   if (editPostId != -1) {
@@ -196,11 +219,15 @@ function showPosts (posts){
   }
 }
 
-function generatePost(postsContainer, post, div){
+function generatePost(postsContainer, post, div, users, categories){
   const postNode = document.createElement("div");
   const editButton = document.createElement("button");
   const updateButton = document.createElement("button");
   const deleteButton = document.createElement("button");
+  let thisUser = null;
+  let thisCategory = null;
+  users.forEach(user => {if (post.userId == user.id) {thisUser = user}});
+  categories.forEach(category => {if (post.categoryId == category.id) {thisCategory = category}});
   deleteButton.addEventListener("click", function() {
     deletePost(post);
     appContainerRefresh();
@@ -210,9 +237,10 @@ function generatePost(postsContainer, post, div){
   if (post.id != editPostId) {
     postNode.innerHTML = `<h3>${post.title}</h3><p>${
       post.content
-    }</p><small>By: ${post.postedBy} on ${new Date(
+    }</p><small>By: ${thisUser.username} on ${new Date(
       post.createdOn
-    ).toLocaleString()}</small>`
+    ).toLocaleString()}</small><br>
+    <small>Category: ${thisCategory.name}}</small>`
     editButton.addEventListener("click", function() {
       editPostId = post.id;
       appContainerRefresh();
