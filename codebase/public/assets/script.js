@@ -137,7 +137,7 @@ function appContainerRefresh () {
 
 async function populatePosts() {
   try{
-    const [posts, users, categories] = await Promise.all([
+    const [posts, users, categories, me] = await Promise.all([
     fetch("http://localhost:3001/api/posts", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
@@ -161,10 +161,21 @@ async function populatePosts() {
     .then((res) => res.json())
     .catch((error) => {
       console.log(error);
+    }),
+    fetch("http://localhost:3001/api/users/me", {
+      method: "GET",
+      headers: { 
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}` 
+      },
+    })
+    .then((res) => res.json())
+    .catch((error) => {
+      console.log(error);
     })
     ]);
   
-    showPosts(posts, users, categories);
+    showPosts(posts, users, categories, me);
   }
   catch (error) {
     console.error('Error fetching data:', error);
@@ -205,12 +216,12 @@ function showPostCategoryDropdown (categories, categorySelectContainerName){
 
 function showCategoryFilterDropdown(categories){}
 
-function showPosts (posts, users, categories){
+function showPosts (posts, users, categories, me){
   const postsContainer = document.getElementById("posts");
   postsContainer.innerHTML = "";
   posts.forEach((post) => {
     const div = document.createElement("div");
-    generatePost(postsContainer, post, div, users, categories);
+    generatePost(postsContainer, post, div, users, categories, me);
   })
   //Populate edit form (if it exists) with current values for the post.
   if (editPostId != -1) {
@@ -221,7 +232,7 @@ function showPosts (posts, users, categories){
   }
 }
 
-function generatePost(postsContainer, post, div, users, categories){
+function generatePost(postsContainer, post, div, users, categories, me){
   if (selectedCategoryId != null && selectedCategoryId != post.categoryId) {
     return;
   }
@@ -245,15 +256,17 @@ function generatePost(postsContainer, post, div, users, categories){
     }</p><small>By: ${thisUser.username} on ${new Date(
       post.createdOn
     ).toLocaleString()}</small><br>
-    <small>Category: ${thisCategory.name}}</small>`
+    <small>Category: ${thisCategory.name}</small>`
     editButton.addEventListener("click", function() {
       editPostId = post.id;
       appContainerRefresh();
     });
     editButton.innerText = "Edit";
     div.appendChild(postNode);
+    if (post.userId == me.me.id) {
     div.appendChild(editButton);
     div.appendChild(deleteButton);
+    }
   } else {
     //If post is set to edit mode, present post as form (similar to that for create post input).
     editPost = post; //Needed later to populate edit form with current values.
