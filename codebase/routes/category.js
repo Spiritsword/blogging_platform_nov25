@@ -1,16 +1,15 @@
-// create a new router
+//create a new router
 const app = require("express").Router();
 
 //import authentication
 const { signToken, authMiddleware} = require("../utils/auth");
 
-// import the models
+//import the models
 const { Post, Category, User } = require("../models/index");
 
-// Route to add a new category
+//route to add a new category
 app.post("/", async (req, res) => {
   try {
-    const category_name = req.body.name;
     const category = await Category.create(req.body);
     res.status(201).json(category);
   } catch (error) {
@@ -18,7 +17,7 @@ app.post("/", async (req, res) => {
   }
 });
 
-// Route to get all categories
+//route to get all categories
 app.get("/", authMiddleware, async (req, res) => {
   try {
     const categories = await Category.findAll();
@@ -28,7 +27,7 @@ app.get("/", authMiddleware, async (req, res) => {
   }
 });
 
-//Route to get single category
+//route to get single category
 app.get("/:id", async (req, res) => {
   try {
     const category = await Category.findByPk(req.params.id);
@@ -38,7 +37,7 @@ app.get("/:id", async (req, res) => {
   }
 });
 
-// Route to update a category
+//route to update a category
 app.put("/:id", async (req, res) => {
   try {
     const { name } = req.body;
@@ -52,7 +51,7 @@ app.put("/:id", async (req, res) => {
   }
 });
 
-// Route to delete a category
+//route to delete a category
 app.delete("/:id", async (req, res) => {
   try {
     const category = await Category.destroy({ where: { id: req.params.id } });
@@ -62,5 +61,5 @@ app.delete("/:id", async (req, res) => {
   }
 });
 
-// export the router
+//export the router
 module.exports = app;

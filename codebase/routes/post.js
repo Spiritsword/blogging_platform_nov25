@@ -4,10 +4,10 @@ const app = require("express").Router();
 //import authentication
 const { signToken, authMiddleware } = require("../utils/auth");
 
-// import the models
+//import the models
 const { Post, Category, User }  = require("../models/index");
 
-// Route to add a new post
+//route to add a new post
 app.post("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.user.id;
@@ -20,7 +20,7 @@ app.post("/", authMiddleware, async (req, res) => {
 }
 );
 
-// Route to get all posts
+//route to get all posts
 app.get("/", async (req, res) => {
   try {
     const posts = await Post.findAll();
@@ -30,6 +30,7 @@ app.get("/", async (req, res) => {
   }
 });
 
+//route to get a particular post
 app.get("/:id", async (req, res) => {
   try {
     const post = await Post.findByPk(req.params.id);
@@ -39,7 +40,7 @@ app.get("/:id", async (req, res) => {
   }
 });
 
-// Route to update a post
+//route to update a post
 app.put("/:id", async (req, res) => {
   try {
     const { title, content, categoryId } = req.body;
@@ -53,7 +54,7 @@ app.put("/:id", async (req, res) => {
   }
 });
 
-// Route to delete a post
+//route to delete a post
 app.delete("/:id", async (req, res) => {
   try {
     const post = await Post.destroy({ where: { id: req.params.id } });
@@ -63,5 +64,5 @@ app.delete("/:id", async (req, res) => {
   }
 });
 
-// export the router
+//export the router
 module.exports = app;

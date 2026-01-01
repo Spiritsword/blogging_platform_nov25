@@ -1,11 +1,63 @@
+//INITIALISATION OF VALUES; GENERAL HELPERS
+
 let token = localStorage.getItem("authToken");
 
 //Id of post that is being edited. ("-1" means no post is being edited.)
 let editPostId = -1;
+//editPost is the post that is marked for editing
 let editPost = null;
+//Filtered category Id (null means no filter applied)
 let selectedCategoryId = null;
 
-//Auth Container Functionality
+//General Helper Functions
+
+function appContainerRefresh () {
+  populateCategories();
+  populatePosts();
+}
+
+//Populate a Category Dropdown
+function showPostCategoryDropdown (categories, categorySelectContainerName){
+      if(document.getElementById(categorySelectContainerName) != null) {
+      const categoriesSelectContainer = document.getElementById(categorySelectContainerName);
+      categoriesSelectContainer.innerHTML = "";
+      categories.forEach((category) => {
+        var option = document.createElement("option");
+        option.innerHTML = `${category.name}`;
+        option.setAttribute("value", category.id);
+        categoriesSelectContainer.appendChild(option);
+      });
+    }
+  }
+
+//Populate all category dropdowns
+function populateCategories() {
+  try{
+    response = fetch("http://localhost:3001/api/categories", {
+    method: "GET",
+    headers: { Authorization: `Bearer ${token}` },
+    })
+    .then((response) => response.json())
+    .then((categories) => {
+      showPostCategoryDropdown(categories, "createPost-category");
+      showPostCategoryDropdown(categories, "updatePost-category");
+      showPostCategoryDropdown(categories, "selectFilter-category");
+    })
+  }
+  catch {
+    console.log(response.status);
+  }
+}
+
+
+
+//AUTH CONTAINER FUNCTIONALITY
+
+function swapToAppContainer () {
+  document.getElementById("auth-container").classList.add("hidden");
+  document.getElementById("app-container").classList.remove("hidden");
+  appContainerRefresh();
+}
 
 function register() {
   const username = document.getElementById("username").value;
@@ -59,7 +111,26 @@ function login() {
     });
 }
 
-//App Container Functionality
+//APP CONTAINER FUNCTIONALITY
+
+function logout() {
+  fetch("http://localhost:3001/api/users/logout", {
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  .then(() => {
+    // Clear the token from the local storage as we're now logged out
+    localStorage.removeItem("authToken");
+    token = null;
+    document.getElementById("auth-container").classList.remove("hidden");
+    document.getElementById("app-container").classList.add("hidden");
+  })
+  .catch((error) => {
+  console.log(error);
+  });
+}
+
+//Category Creation
 
 function createCategory() {
   const name = document.getElementById("category-name").value;
@@ -81,22 +152,7 @@ function createCategory() {
   });
 }
 
-function logout() {
-  fetch("http://localhost:3001/api/users/logout", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}` },
-  })
-  .then(() => {
-    // Clear the token from the local storage as we're now logged out
-    localStorage.removeItem("authToken");
-    token = null;
-    document.getElementById("auth-container").classList.remove("hidden");
-    document.getElementById("app-container").classList.add("hidden");
-  })
-  .catch((error) => {
-  console.log(error);
-  });
-}
+//Post Creation
 
 function createPost() {
   const title = document.getElementById("createPost-title").value;
@@ -120,19 +176,97 @@ function createPost() {
   });
 }
 
-//Helper Functions
+//Category Filtering
 
-function swapToAppContainer () {
-  document.getElementById("auth-container").classList.add("hidden");
-  document.getElementById("app-container").classList.remove("hidden");
+function filterByCategory() {
+  selectedCategoryId = document.getElementById("selectFilter-category").value;
   appContainerRefresh();
 }
 
-function appContainerRefresh () {
-  populateCategories();
-  populatePosts();
+function cancelCategoryFilter() {
+  selectedCategoryId = null;
+  appContainerRefresh();
 }
 
+//Post List Population
+
+//Generation of individual post
+function generatePost(postsContainer, post, div, users, categories, me){
+  if (selectedCategoryId != null && selectedCategoryId != post.categoryId) {
+    return;
+  }
+  const postNode = document.createElement("div");
+  const editButton = document.createElement("button");
+  const updateButton = document.createElement("button");
+  const deleteButton = document.createElement("button");
+  let thisUser = null;
+  let thisCategory = null;
+  //Full user information is pulled in for current post
+  users.forEach(user => {if (post.userId == user.id) {thisUser = user}});
+  //Full category information is pulled in for current post
+  categories.forEach(category => {if (post.categoryId == category.id) {thisCategory = category}});
+  deleteButton.addEventListener("click", function() {
+    deletePost(post);
+    appContainerRefresh();
+  })
+  deleteButton.innerText = "Delete";
+  //If post is not set to edit mode, present as normal.
+  if (post.id != editPostId) {
+    postNode.innerHTML = `<h3>${post.title}</h3><p>${
+      post.content
+    }</p><small>By: ${thisUser.username} on ${new Date(
+      post.createdOn
+    ).toLocaleString()}</small><br>
+    <small>Category: ${thisCategory.name}</small>`
+    editButton.addEventListener("click", function() {
+      editPostId = post.id;
+      appContainerRefresh();
+    });
+    editButton.innerText = "Edit";
+    div.appendChild(postNode);
+    if (post.userId == me.me.id) {
+    div.appendChild(editButton);
+    div.appendChild(deleteButton);
+    }
+  } else {
+    //If post is set to edit mode, present post as a form (similar to that for create post).
+    editPost = post; //recording post in a global variable, to later to populate edit form with current values
+    postNode.innerHTML = `
+      <input type="text" id="updatePost-title">
+      <select name="category" id="updatePost-category">
+        <!-- Categories will be populated here -->
+      </select>
+      <textarea id="updatePost-content"></textarea>`
+    updateButton.addEventListener("click", function() {
+      updatePost();
+      appContainerRefresh();
+    })
+    updateButton.innerText = "Update";
+    div.appendChild(postNode);
+    div.appendChild(updateButton);
+    div.appendChild(deleteButton);
+  }
+  postsContainer.appendChild(div);
+}
+
+//Function that shows all relevant posts in post list
+function showPosts (posts, users, categories, me){
+  const postsContainer = document.getElementById("posts");
+  postsContainer.innerHTML = "";
+  posts.forEach((post) => {
+    const div = document.createElement("div");
+    generatePost(postsContainer, post, div, users, categories, me);
+  })
+  //Populate edit form (if it exists) with current values for the post.
+  if (editPostId != -1) {
+  populateCategories();
+  document.getElementById("updatePost-title").value = editPost.title;
+  document.getElementById("updatePost-category").value = editPost.categoryId;
+  document.getElementById("updatePost-content").value = editPost.content;
+  }
+}
+
+//Shell for showPosts function, which pulls in all relevantdata from the API
 async function populatePosts() {
   try{
     const [posts, users, categories, me] = await Promise.all([
@@ -181,110 +315,7 @@ async function populatePosts() {
   }
 }
 
-function populateCategories() {
-  try{
-    response = fetch("http://localhost:3001/api/categories", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${token}` },
-    })
-    .then((response) => response.json())
-    .then((categories) => {
-      showPostCategoryDropdown(categories, "createPost-category");
-      showPostCategoryDropdown(categories, "updatePost-category");
-      showPostCategoryDropdown(categories, "selectFilter-category");
-    })
-  }
-  catch {
-    console.log(response.status);
-  }
-}
-
-function showPostCategoryDropdown (categories, categorySelectContainerName){
-      if(document.getElementById(categorySelectContainerName) != null) {
-      const categoriesSelectContainer = document.getElementById(categorySelectContainerName);
-      categoriesSelectContainer.innerHTML = "";
-      categories.forEach((category) => {
-        var option = document.createElement("option");
-        option.innerHTML = `${category.name}`;
-        option.setAttribute("value", category.id);
-        categoriesSelectContainer.appendChild(option);
-      });
-    }
-  }
-
-function showCategoryFilterDropdown(categories){}
-
-function showPosts (posts, users, categories, me){
-  const postsContainer = document.getElementById("posts");
-  postsContainer.innerHTML = "";
-  posts.forEach((post) => {
-    const div = document.createElement("div");
-    generatePost(postsContainer, post, div, users, categories, me);
-  })
-  //Populate edit form (if it exists) with current values for the post.
-  if (editPostId != -1) {
-  populateCategories();
-  document.getElementById("updatePost-title").value = editPost.title;
-  document.getElementById("updatePost-category").value = editPost.categoryId;
-  document.getElementById("updatePost-content").value = editPost.content;
-  }
-}
-
-function generatePost(postsContainer, post, div, users, categories, me){
-  if (selectedCategoryId != null && selectedCategoryId != post.categoryId) {
-    return;
-  }
-  const postNode = document.createElement("div");
-  const editButton = document.createElement("button");
-  const updateButton = document.createElement("button");
-  const deleteButton = document.createElement("button");
-  let thisUser = null;
-  let thisCategory = null;
-  users.forEach(user => {if (post.userId == user.id) {thisUser = user}});
-  categories.forEach(category => {if (post.categoryId == category.id) {thisCategory = category}});
-  deleteButton.addEventListener("click", function() {
-    deletePost(post);
-    appContainerRefresh();
-  })
-  deleteButton.innerText = "Delete";
-  //If post is not set to edit mode, present as normal.
-  if (post.id != editPostId) {
-    postNode.innerHTML = `<h3>${post.title}</h3><p>${
-      post.content
-    }</p><small>By: ${thisUser.username} on ${new Date(
-      post.createdOn
-    ).toLocaleString()}</small><br>
-    <small>Category: ${thisCategory.name}</small>`
-    editButton.addEventListener("click", function() {
-      editPostId = post.id;
-      appContainerRefresh();
-    });
-    editButton.innerText = "Edit";
-    div.appendChild(postNode);
-    if (post.userId == me.me.id) {
-    div.appendChild(editButton);
-    div.appendChild(deleteButton);
-    }
-  } else {
-    //If post is set to edit mode, present post as form (similar to that for create post input).
-    editPost = post; //Needed later to populate edit form with current values.
-    postNode.innerHTML = `
-      <input type="text" id="updatePost-title">
-      <select name="category" id="updatePost-category">
-        <!-- Categories will be populated here -->
-      </select>
-      <textarea id="updatePost-content"></textarea>`
-    updateButton.addEventListener("click", function() {
-      updatePost();
-      appContainerRefresh();
-    })
-    updateButton.innerText = "Update";
-    div.appendChild(postNode);
-    div.appendChild(updateButton);
-    div.appendChild(deleteButton);
-  }
-  postsContainer.appendChild(div);
-}
+//Post Update and Deletion
 
 function updatePost() {
     const title = document.getElementById("updatePost-title").value;
@@ -305,15 +336,6 @@ function updatePost() {
   })
 }
 
-function filterByCategory() {
-  selectedCategoryId = document.getElementById("selectFilter-category").value;
-  appContainerRefresh();
-}
-
-function cancelCategoryFilter() {
-  selectedCategoryId = null;
-  appContainerRefresh();
-}
 
 function deletePost(post){
     fetch(`http://localhost:3001/api/posts/${post.id}`, {      

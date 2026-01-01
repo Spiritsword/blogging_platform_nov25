@@ -2,7 +2,7 @@ const router = require("express").Router();
 const { Post, Category, User }  = require("../models/index");
 const { signToken, authMiddleware } = require("../utils/auth");
 
-// Get current authenticated user
+//get current authenticated user
 router.get("/me", authMiddleware, async (req, res) => {
   try {
     const me = await User.findByPk(req.user.id);
@@ -13,7 +13,7 @@ router.get("/me", authMiddleware, async (req, res) => {
   }
 });
 
-// GET the User record
+//GET the User record
 router.get("/:id", async (req, res) => {
   try {
     const userData = await User.getOne(req.params.id);
@@ -28,6 +28,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+//GET all user records
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const users = await User.findAll();
@@ -37,6 +38,7 @@ router.get("/", authMiddleware, async (req, res) => {
   }
 });
 
+//CREATE a new user record
 router.post("/", async (req, res) => {
   try {
     const userData = await User.create(req.body);
@@ -47,7 +49,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// UDPATE the User record
+//UDPATE a user record
 router.put("/:id", async (req, res) => {
   try {
     const userData = await User.update(req.body, {

@@ -4,7 +4,7 @@ const postRoutes = require("./post");
 const categoryRoutes = require("./category");
 const userRoutes = require("./user");
 
-// create a default route for /api
+//create a default route for /api
 router.get("/api", (req, res) => {
   res.json({ message: "Welcome to the API" });
 });
