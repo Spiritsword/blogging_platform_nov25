@@ -120,6 +120,13 @@ This specifies which files and folders should not be monitored by the Git system
 #### readme.md
 = this file
 
+## Project Links
+
+#### GitHub
+https://github.com/Spiritsword/blogging_platform_nov25
+
+#### Video Demo
+https://www.youtube.com/watch?v=x6RV4PRkx5w
 
 ## Resources
 
