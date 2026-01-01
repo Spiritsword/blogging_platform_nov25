@@ -33,7 +33,7 @@ function showPostCategoryDropdown (categories, categorySelectContainerName){
 //Populate all category dropdowns
 function populateCategories() {
   try{
-    response = fetch("http://localhost:3001/api/categories", {
+    response = fetch("/api/categories", {
     method: "GET",
     headers: { Authorization: `Bearer ${token}` },
     })
@@ -63,7 +63,7 @@ function register() {
   const username = document.getElementById("username").value;
   const email = document.getElementById("email").value;
   const password = document.getElementById("password").value;
-  fetch("http://localhost:3001/api/users", {
+  fetch("/api/users", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ username, email, password }),
@@ -86,7 +86,7 @@ function register() {
 function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
-  fetch("http://localhost:3001/api/users/login", {
+  fetch("/api/users/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
@@ -114,7 +114,7 @@ function login() {
 //APP CONTAINER FUNCTIONALITY
 
 function logout() {
-  fetch("http://localhost:3001/api/users/logout", {
+  fetch("/api/users/logout", {
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   })
@@ -134,7 +134,7 @@ function logout() {
 
 function createCategory() {
   const name = document.getElementById("category-name").value;
-  fetch("http://localhost:3001/api/categories", {
+  fetch("/api/categories", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -158,7 +158,7 @@ function createPost() {
   const title = document.getElementById("createPost-title").value;
   const content = document.getElementById("createPost-content").value;
   const categoryId = parseInt(document.getElementById("createPost-category").value);
-  fetch("http://localhost:3001/api/posts", {
+  fetch("/api/posts", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -270,7 +270,7 @@ function showPosts (posts, users, categories, me){
 async function populatePosts() {
   try{
     const [posts, users, categories, me] = await Promise.all([
-    fetch("http://localhost:3001/api/posts", {
+    fetch("/api/posts", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -278,7 +278,7 @@ async function populatePosts() {
     .catch((error) => {
       console.log(error);
     }),
-    fetch("http://localhost:3001/api/users", {
+    fetch("/api/users", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -286,7 +286,7 @@ async function populatePosts() {
     .catch((error) => {
       console.log(error);
     }),
-    fetch("http://localhost:3001/api/categories", {
+    fetch("/api/categories", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -294,7 +294,7 @@ async function populatePosts() {
     .catch((error) => {
       console.log(error);
     }),
-    fetch("http://localhost:3001/api/users/me", {
+    fetch("/api/users/me", {
       method: "GET",
       headers: { 
         "Content-Type": "application/json",
@@ -322,7 +322,7 @@ function updatePost() {
     const content = document.getElementById("updatePost-content").value;
     const categoryId = parseInt(document.getElementById("updatePost-category").value);
     const body = JSON.stringify({title, content, categoryId});
-    fetch(`http://localhost:3001/api/posts/${editPostId}`, {      
+    fetch(`/api/posts/${editPostId}`, {      
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -338,7 +338,7 @@ function updatePost() {
 
 
 function deletePost(post){
-    fetch(`http://localhost:3001/api/posts/${post.id}`, {      
+    fetch(`/api/posts/${post.id}`, {      
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
   })
